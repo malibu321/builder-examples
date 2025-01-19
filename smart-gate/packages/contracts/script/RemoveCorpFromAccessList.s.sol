@@ -9,17 +9,16 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { Utils } from "../src/systems/Utils.sol";
 import { Utils as SmartGateUtils } from "@eveworld/world/src/modules/smart-gate/Utils.sol";
 import { SmartGateLib } from "@eveworld/world/src/modules/smart-gate/SmartGateLib.sol";
+import { SmartGateSystem } from "../src/systems/SmartGateSystem.sol";
 import { FRONTIER_WORLD_DEPLOYMENT_NAMESPACE } from "@eveworld/common-constants/src/constants.sol";
-import { GateAccess } from "../src/codegen/tables/GateAccess.sol";
 
-contract ConfigureSmartGate is Script {
+contract RemoveCorpFromAccessList is Script {
   using SmartGateUtils for bytes14;
   using SmartGateLib for SmartGateLib.World;
 
   SmartGateLib.World smartGate;
 
-  function run(address worldAddress) external {
-    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+  function run(address worldAddress, uint256 corpId, bytes32 accessListId) external {
     uint256 privateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(privateKey);
 
@@ -28,18 +27,19 @@ contract ConfigureSmartGate is Script {
 
     smartGate = SmartGateLib.World({ iface: IBaseWorld(worldAddress), namespace: FRONTIER_WORLD_DEPLOYMENT_NAMESPACE });
 
-    uint256 smartGateId = vm.envUint("SOURCE_GATE_ID");
-
     ResourceId systemId = Utils.smartGateSystemId();
 
-    //This function can only be called by the owner of the smart turret
-    smartGate.configureSmartGate(smartGateId, systemId);
+    world.call(
+      systemId,
+      abi.encodeCall(
+        SmartGateSystem.removeCorpIdFromAccessList,
+        (corpId, accessListId)
+      )
+    );
 
-    //Get the allowed corp
-    uint256 corpID = vm.envUint("ALLOWED_CORP_ID");
-
-    //Set the MUD table for the corp whitelist
-    GateAccess.set(smartGateId, corpID);
+    console.log("corp with ID ", corpId);
+    console.log("removed from access list ID");
+    console.logBytes32(accessListId);
 
     vm.stopBroadcast();
   }
