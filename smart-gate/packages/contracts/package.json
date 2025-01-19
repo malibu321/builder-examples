@@ -31,7 +31,7 @@
     "address-of-key": ". ./.env && pnpm forge script ./script/AddressOfKey.s.sol:AddressOfKey --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(uint256)\"",
     "create-whitelist": ". ./.env && pnpm forge script ./script/CreateWhitelist.s.sol:CreateWhitelist --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address,string)\" $WORLD_ADDRESS",
     "create-blacklist": ". ./.env && pnpm forge script ./script/CreateBlacklist.s.sol:CreateBlacklist --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address,string)\" $WORLD_ADDRESS",    
-    "delete-access-list": ". ./.env && pnpm forge script ./script/DeleteAccessList.s.sol:DeleteAccessList --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(bytes32)\" $WORLD_ADDRESS",
+    "delete-access-list": ". ./.env && pnpm forge script ./script/DeleteAccessList.s.sol:DeleteAccessList --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address,bytes32)\" $WORLD_ADDRESS",
     "env-stillness": "bash ../../shell-scripts/ConvertEnvToServer.sh stillness",
     "env-nova": "bash ../../shell-scripts/ConvertEnvToServer.sh nova",
     "env-local": "bash ../../shell-scripts/ConvertEnvToLocal.sh",
