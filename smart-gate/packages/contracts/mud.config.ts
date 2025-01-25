@@ -1,7 +1,7 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "malibu_test2",
+  namespace: "test",
     tables: {
       /**
        * Associates a gate (smartObjectId) with an array of access list identifiers.
