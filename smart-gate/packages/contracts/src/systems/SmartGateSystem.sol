@@ -121,7 +121,7 @@ contract SmartGateSystem is System {
    * Example usage:
    *   addAccessListToGate(gateId, accessListId);
    */
-  function addAccessListToGate(uint256 gateId, bytes32 accessListId) public onlyOwner(gateId) {
+  function addAccessListToGate(uint256 gateId, bytes32 accessListId) public onlyAccessListManager() {
     bytes32[] memory currentIds = GateAccessLists.getAccessListIds(gateId);
     bytes32[] memory newIds = new bytes32[](currentIds.length + 1);
 
@@ -155,7 +155,7 @@ contract SmartGateSystem is System {
    * Example usage:
    *   removeAccessListFromGate(gateId, accessListId);
    */
-  function removeAccessListFromGate(uint256 gateId, bytes32 accessListId) public onlyOwner(gateId) {
+  function removeAccessListFromGate(uint256 gateId, bytes32 accessListId) public onlyAccessListManager() {
     bytes32[] memory currentIds = GateAccessLists.getAccessListIds(gateId);
 
     // Variable to hold the index of the accessListId to remove, stays -1 if list not found
