@@ -304,7 +304,7 @@ contract SmartGateSystem is System {
     }
 
     // 2) Verify that this corp is not already on the list
-    AccessListEntriesData memory existing = AccessListEntries.get(accessListId, corpId, 0);
+    AccessListEntriesData memory existing = AccessListEntries.get(accessListId, corpId, 1);
     if (existing.entryExists) {
       revert("Corp already in list");
     }
@@ -317,7 +317,7 @@ contract SmartGateSystem is System {
     });
 
     // 4) Store the new entry in the MUD table
-    AccessListEntries.set(accessListId, corpId, 0, newEntry);
+    AccessListEntries.set(accessListId, corpId, 1, newEntry);
   }
 
   /**
