@@ -40,9 +40,9 @@ contract SmartGateSystem is System {
    *
    * LOGIC:
    *  1) Gather all AccessListIDs linked to smartObjectId.
-   *  2) Check if char or corp is in any BLACKLIST:
+   *  2) Check if char or corp is in any DENYLIST:
    *       - if found => return false
-   *  3) Check if char or corp is in any WHITELIST:
+   *  3) Check if char or corp is in any ALLOWLIST:
    *       - if found => return true
    *  4) If not on any list => return false
    */
@@ -53,54 +53,54 @@ contract SmartGateSystem is System {
     // 1) Get all access list IDs associated with this gate
     bytes32[] memory listIds = GateAccessLists.getAccessListIds(smartObjectId);
 
-    // 2) Check for blacklists first
+    // 2) Check for denylists first
     for (uint256 i = 0; i < listIds.length; i++) {
       //AccessListDefinitionsData memory accessListDefinitionsData = AccessListDefinitions.get(listIds[i]);
 
-      bool isWhitelist = AccessListDefinitions.getIsWhitelist(listIds[i]);
-      // skip if isWhitelist
-      if (isWhitelist) {
+      bool isAllowlist = AccessListDefinitions.getIsAllowlist(listIds[i]);
+      // skip if isAllowlist
+      if (isAllowlist) {
         continue;
       }
 
       // check char
       bool doesCharEntryExist = AccessListEntries.getEntryExists(listIds[i], charId, 0);
       if (doesCharEntryExist) {
-        // char found on a blacklist => deny access
+        // char found on a denylist => deny access
         return false;
       }
 
       // check corp
       bool doesCorpEntryExist = AccessListEntries.getEntryExists(listIds[i], corpId, 1);
       if (doesCorpEntryExist) {
-        // corp found on a blacklist => deny access
+        // corp found on a denylist => deny access
         return false;
       }
     }
 
-    // 3) Check for whitelists
+    // 3) Check for allowlists
     for (uint256 i = 0; i < listIds.length; i++) {
-      bool isWhitelist = AccessListDefinitions.getIsWhitelist(listIds[i]);
-      // skip if not isWhitelist, it's a blacklist
-      if (!isWhitelist) {
+      bool isAllowlist = AccessListDefinitions.getIsAllowlist(listIds[i]);
+      // skip if not isAllowlist, it's a denylist
+      if (!isAllowlist) {
         continue;
       }
   
       // check char
       bool doesCharEntryExist = AccessListEntries.getEntryExists(listIds[i], charId, 0);
       if (doesCharEntryExist) {
-        // char found on a whitelist => allow
+        // char found on a allowlist => allow
         return true;
       }
       // check corp
       bool doesCorpEntryExist = AccessListEntries.getEntryExists(listIds[i], corpId, 1);
 
       if (doesCorpEntryExist) {
-        // corp found on a whitelist => allow
+        // corp found on a allowlist => allow
         return true;
       }  
     }
-    // 4) Default: if not on any blacklist or whitelist => no access
+    // 4) Default: if not on any denylist or allowlist => no access
     return false;
   }
 
@@ -193,14 +193,14 @@ contract SmartGateSystem is System {
    
   /**
    * @notice Creates a new Access List entry in the MUD AccessListDefinitions table.
-   * @param accessListName A descriptive name (e.g., "MainWhitelist").
-   * @param isWhitelist    true for Whitelist, false for Blacklist.
+   * @param accessListName A descriptive name (e.g., "MainAllowlist").
+   * @param isAllowlist    true for Allowlist, false for Denylist.
    * @return listId        The generated accessListId (bytes32).
    *
    * Example:
-   *   bytes32 newAccessListId = createAccessList("NewWhitelist", true);
+   *   bytes32 newAccessListId = createAccessList("NewAllowlist", true);
    */
-  function createAccessList(string memory accessListName, bool isWhitelist) public onlyAccessListManager() returns (bytes32 listId) {
+  function createAccessList(string memory accessListName, bool isAllowlist) public onlyAccessListManager() returns (bytes32 listId) {
     listId = keccak256(bytes(accessListName));
 
     AccessListDefinitionsData memory existing = AccessListDefinitions.get(listId);
@@ -209,7 +209,7 @@ contract SmartGateSystem is System {
     }
 
     AccessListDefinitionsData memory newList = AccessListDefinitionsData({
-      isWhitelist:     isWhitelist,
+      isAllowlist:     isAllowlist,
       createdBy:       msg.sender,
       entryExists:     true,
       accessListName:  accessListName

@@ -34,24 +34,24 @@ contract CustomScript is Script {
 
     ResourceId systemId = Utils.smartGateSystemId();
 /*
-    // Whitelist
-    bytes memory whitelistResult = world.call(
+    // Allowlist
+    bytes memory allowlistResult = world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.createAccessList,
-        ("test_whitelist", true)
+        ("test_allowlist", true)
       )
     );
-    bytes32 testWhitelistId = abi.decode(whitelistResult, (bytes32));
+    bytes32 testAllowlistId = abi.decode(allowlistResult, (bytes32));
 
-    console.log("Whitelist ID");
-    console.logBytes32(testWhitelistId);
+    console.log("Allowlist ID");
+    console.logBytes32(testAllowlistId);
 
     world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (15350231617936866033800429068055185838535504456062486099387944243245585217822, testWhitelistId)
+        (15350231617936866033800429068055185838535504456062486099387944243245585217822, testAllowlistId)
       )
     );
 
@@ -59,7 +59,7 @@ contract CustomScript is Script {
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (89402346651494321089758371369127499014342777729463889286922264122588247715106, testWhitelistId)
+        (89402346651494321089758371369127499014342777729463889286922264122588247715106, testAllowlistId)
       )
     );
 
@@ -67,7 +67,7 @@ contract CustomScript is Script {
       systemId,
       abi.encodeCall(
         SmartGateSystem.addAccessListToGate,
-        (smartGateId, testWhitelistId)
+        (smartGateId, testAllowlistId)
       )
     );
 
@@ -75,7 +75,7 @@ contract CustomScript is Script {
       systemId,
       abi.encodeCall(
         SmartGateSystem.addAccessListToGate,
-        (destinationSmartGateId, testWhitelistId)
+        (destinationSmartGateId, testAllowlistId)
       )
     );*/
 /*

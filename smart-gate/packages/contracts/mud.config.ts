@@ -24,21 +24,21 @@ export default defineWorld({
       /**
        * Defines an access list by providing:
        *   - accessListId(bytes32): a unique identifier for the list
-       *   - accessListName(string): a descriptive name (e.g., "MainWhitelist")
-       *   - isWhitelist(bool): indicates whether the list is a whitelist (true) or a blacklist (false)
+       *   - accessListName(string): a descriptive name (e.g., "MainAllowlist")
+       *   - isAllowlist(bool): indicates whether the list is a allowlist (true) or a denylist (false)
        *   - createdBy: wallet address which created the access list
        * 
        * Retrieve the data for a given listId with:
        *
        *   AccessListDefinitionsData memory listData = AccessListDefinitions.get(listId);
        *   bytes32 listKey = listData.accessListId;
-       *   bool isWhite = listData.isWhitelist;
+       *   bool isWhite = listData.isAllowlist;
        *   // etc.
        */
       AccessListDefinitions: {
         schema: {
           accessListId: "bytes32",
-          isWhitelist: "bool",
+          isAllowlist: "bool",
           createdBy: "address",
           entryExists: "bool",
           accessListName: "string",

@@ -14,13 +14,13 @@ import { FRONTIER_WORLD_DEPLOYMENT_NAMESPACE } from "@eveworld/common-constants/
 
 import { AccessListDefinitions, AccessListDefinitionsData } from "../src/codegen/tables/AccessListDefinitions.sol";
 
-contract CreateWhitelist is Script {
+contract CreateAllowlist is Script {
   using SmartGateUtils for bytes14;
   using SmartGateLib for SmartGateLib.World;
 
   SmartGateLib.World smartGate;
 
-  function run(address worldAddress, string memory whitelistName) external {
+  function run(address worldAddress, string memory allowlistName) external {
     uint256 privateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(privateKey);
 
@@ -34,18 +34,18 @@ contract CreateWhitelist is Script {
 
     ResourceId systemId = Utils.smartGateSystemId();
 
-    bytes memory whitelistResult = world.call(
+    bytes memory allowlistResult = world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.createAccessList,
-        (whitelistName, true)
+        (allowlistName, true)
       )
     );
-    bytes32 whitelistId = abi.decode(whitelistResult, (bytes32));
+    bytes32 allowlistId = abi.decode(allowlistResult, (bytes32));
 
-    console.log("Whitelist created whith name", whitelistName);
+    console.log("Allowlist created whith name", allowlistName);
     console.log("AccessListId");
-    console.logBytes32(whitelistId);
+    console.logBytes32(allowlistId);
 
     vm.stopBroadcast();
   }

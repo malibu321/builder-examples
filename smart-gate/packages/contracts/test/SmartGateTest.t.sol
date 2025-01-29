@@ -129,28 +129,28 @@ contract SmartGateTest is MudTest {
   }
 
   function initializeTestPlayers() internal {
-    address testPlayerCharWhitelistOnly = generateRandomAddressForTest(vm.envUint("TEST_SEED"));
-    address testPlayerCharBlacklistOnly = generateRandomAddressForTest(vm.envUint("TEST_SEED")+51345);
+    address testPlayerCharAllowlistOnly = generateRandomAddressForTest(vm.envUint("TEST_SEED"));
+    address testPlayerCharDenylistOnly = generateRandomAddressForTest(vm.envUint("TEST_SEED")+51345);
     address testPlayerCharNoList = generateRandomAddressForTest(vm.envUint("TEST_SEED")+198745524);
-    address testPlayerBlacklistAndWhitelist = generateRandomAddressForTest(vm.envUint("TEST_SEED")+134355555);
+    address testPlayerDenylistAndAllowlist = generateRandomAddressForTest(vm.envUint("TEST_SEED")+134355555);
 
-    if (CharactersByAddressTable.get(testPlayerCharWhitelistOnly) == 0) {
+    if (CharactersByAddressTable.get(testPlayerCharAllowlistOnly) == 0) {
       smartCharacter.createCharacter(
-        vm.envUint("TEST_PLAYER_CHAR_ID_WHITELIST_ONLY"),
-        testPlayerCharWhitelistOnly,
+        vm.envUint("TEST_PLAYER_CHAR_ID_ALLOWLIST_ONLY"),
+        testPlayerCharAllowlistOnly,
         4041,
         CharacterEntityRecord({ typeId: 123, itemId: 234, volume: 100 }),
-        EntityRecordOffchainTableData({ name: "testPlayerCharWhitelistOnly", dappURL: "noURL", description: "." }),
+        EntityRecordOffchainTableData({ name: "testPlayerCharAllowlistOnly", dappURL: "noURL", description: "." }),
         ""
       );
     }
-    if (CharactersByAddressTable.get(testPlayerCharBlacklistOnly) == 0) {
+    if (CharactersByAddressTable.get(testPlayerCharDenylistOnly) == 0) {
       smartCharacter.createCharacter(
-        vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_ONLY"),
-        testPlayerCharBlacklistOnly,
+        vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_ONLY"),
+        testPlayerCharDenylistOnly,
         4041,
         CharacterEntityRecord({ typeId: 123, itemId: 234, volume: 100 }),
-        EntityRecordOffchainTableData({ name: "testPlayerCharBlacklistOnly", dappURL: "noURL", description: "." }),
+        EntityRecordOffchainTableData({ name: "testPlayerCharDenylistOnly", dappURL: "noURL", description: "." }),
         ""
       );
     }
@@ -164,13 +164,13 @@ contract SmartGateTest is MudTest {
         ""
       );
     }
-    if (CharactersByAddressTable.get(testPlayerBlacklistAndWhitelist) == 0) {
+    if (CharactersByAddressTable.get(testPlayerDenylistAndAllowlist) == 0) {
       smartCharacter.createCharacter(
-        vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_AND_WHITELIST"),
-        testPlayerBlacklistAndWhitelist,
+        vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_AND_ALLOWLIST"),
+        testPlayerDenylistAndAllowlist,
         4041,
         CharacterEntityRecord({ typeId: 123, itemId: 234, volume: 100 }),
-        EntityRecordOffchainTableData({ name: "testPlayerBlacklistAndWhitelist", dappURL: "noURL", description: "." }),
+        EntityRecordOffchainTableData({ name: "testPlayerDenylistAndAllowlist", dappURL: "noURL", description: "." }),
         ""
       );
     }
@@ -180,53 +180,53 @@ contract SmartGateTest is MudTest {
     vm.startPrank(gateOwner);
     AccessListManager.set(gateOwner, true);
 
-    // Blacklist
-    bytes memory blacklistResult = world.call(
+    // Denylist
+    bytes memory denylistResult = world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.createAccessList,
-        (vm.envString("TEST_BLACKLIST_NAME"), false)
+        (vm.envString("TEST_DENYLIST_NAME"), false)
       )
     );
-    bytes32 testBlacklistId = abi.decode(blacklistResult, (bytes32));
+    bytes32 testDenylistId = abi.decode(denylistResult, (bytes32));
 
     world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_ONLY"), testBlacklistId)
+        (vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_ONLY"), testDenylistId)
       )
     );
     world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_AND_WHITELIST"), testBlacklistId)
+        (vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_AND_ALLOWLIST"), testDenylistId)
       )
     );
     world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.addAccessListToGate,
-        (smartObjectId, testBlacklistId)
+        (smartObjectId, testDenylistId)
       )
     );
     
-    // Whitelist
-    bytes memory whitelistResult = world.call(
+    // Allowlist
+    bytes memory allowlistResult = world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.createAccessList,
-        (vm.envString("TEST_WHITELIST_NAME"), true)
+        (vm.envString("TEST_ALLOWLIST_NAME"), true)
       )
     );
-    bytes32 testWhitelistId = abi.decode(whitelistResult, (bytes32));
+    bytes32 testAllowlistId = abi.decode(allowlistResult, (bytes32));
 
     world.call(
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (vm.envUint("TEST_PLAYER_CHAR_ID_WHITELIST_ONLY"), testWhitelistId)
+        (vm.envUint("TEST_PLAYER_CHAR_ID_ALLOWLIST_ONLY"), testAllowlistId)
       )
     );
 
@@ -234,7 +234,7 @@ contract SmartGateTest is MudTest {
       systemId,
       abi.encodeCall(
         SmartGateSystem.addCharIdToAccessList,
-        (vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_AND_WHITELIST"), testWhitelistId)
+        (vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_AND_ALLOWLIST"), testAllowlistId)
       )
     );
 
@@ -242,7 +242,7 @@ contract SmartGateTest is MudTest {
       systemId,
       abi.encodeCall(
         SmartGateSystem.addAccessListToGate,
-        (smartObjectId, testWhitelistId)
+        (smartObjectId, testAllowlistId)
       )
     );
 
@@ -341,13 +341,13 @@ contract SmartGateTest is MudTest {
     assertFalse(isRemovedIdStillThere, "Access List has not been removed from gate");
   }
 
-  function testPlayerOnCharWhitelistCanJump() public {    
+  function testPlayerOnCharAllowlistCanJump() public {    
     bool canJumpResult = abi.decode(
       world.call(
         systemId,
         abi.encodeCall(
           SmartGateSystem.canJump,
-          (vm.envUint("TEST_PLAYER_CHAR_ID_WHITELIST_ONLY"), sourceGateId, destinationGateId)
+          (vm.envUint("TEST_PLAYER_CHAR_ID_ALLOWLIST_ONLY"), sourceGateId, destinationGateId)
         )
       ),
       (bool)
@@ -356,13 +356,13 @@ contract SmartGateTest is MudTest {
     assertTrue(canJumpResult, "Player should have access");
   }
 
-  function testPlayerOnCharBlacklistCanNotJump() public {    
+  function testPlayerOnCharDenylistCanNotJump() public {    
     bool canJumpResult = abi.decode(
       world.call(
         systemId,
         abi.encodeCall(
           SmartGateSystem.canJump,
-          (vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_ONLY"), sourceGateId, destinationGateId)
+          (vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_ONLY"), sourceGateId, destinationGateId)
         )
       ),
       (bool)
@@ -386,13 +386,13 @@ contract SmartGateTest is MudTest {
     assertFalse(canJumpResult, "Player should not have access");
   }
 
-  function testPlayerOnWhitelsitAndBlacklistCanNotJump() public {    
+  function testPlayerOnWhitelsitAndDenylistCanNotJump() public {    
     bool canJumpResult = abi.decode(
       world.call(
         systemId,
         abi.encodeCall(
           SmartGateSystem.canJump,
-          (vm.envUint("TEST_PLAYER_CHAR_ID_BLACKLIST_AND_WHITELIST"), sourceGateId, destinationGateId)
+          (vm.envUint("TEST_PLAYER_CHAR_ID_DENYLIST_AND_ALLOWLIST"), sourceGateId, destinationGateId)
         )
       ),
       (bool)
